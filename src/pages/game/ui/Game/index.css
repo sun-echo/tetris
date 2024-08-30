@@ -1,0 +1,12 @@
+#root {
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.game-field {
+  display: grid;
+  grid-template-columns: repeat(10, 250px);
+  grid-template-rows: repeat(10, 250px);
+  overflow: hidden;
+}

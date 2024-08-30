@@ -1,10 +1,28 @@
 import sample from 'lodash/sample';
 import cloneDeep from 'lodash/cloneDeep';
-import { Color, DefaultPoints, Shapes } from '../lib/constants';
+import { Color, DefaultPoints, FieldIndexMap, Shapes } from '../lib/constants';
 import { Field, Point, Shape } from '../lib/types';
 
-const getRandomColor = () => sample(Object.values(Color)) as Color;
+const getRandomColor = () => sample(Object.values(Color).filter(v => v !== Color.Black)) as Color;
 const getRandomShape = () => Shapes[Shapes.length * Math.random() | 0];
+
+function generateField() {
+  const newField: Field = {};
+
+  for (let x = 0; x < 10; x++) {
+    for (let y = 0; y < 20; y++) {
+      const index = FieldIndexMap[x] + FieldIndexMap[y];
+
+      newField[index] = {
+        x: x,
+        y: y,
+        color: Color.Black,
+      };
+    }
+  }
+
+  return newField;
+}
 
 function generateTetramino() {
   const shapeType = getRandomShape();
@@ -13,8 +31,6 @@ function generateTetramino() {
     points: DefaultPoints[shapeType],
     color: getRandomColor(),
   }
-
-  console.log('debug', tetramino);
 
   return tetramino;
 }
@@ -50,6 +66,7 @@ function placeShapeOnField(field: Field, shape: Shape) {
 }
 
 export {
+  generateField,
   generateTetramino,
   placeShapeOnField,
   getPointFieldIndex,

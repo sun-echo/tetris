@@ -7,13 +7,13 @@ const getRandomColor = () => sample(Object.values(Color).filter(v => v !== Color
 const getRandomShape = () => Shapes[Shapes.length * Math.random() | 0];
 
 function generateField() {
-  const newField: Field = {};
+  const _field: Field = {};
 
   for (let x = 0; x < 10; x++) {
     for (let y = 0; y < 20; y++) {
       const index = FieldIndexMap[x] + FieldIndexMap[y];
 
-      newField[index] = {
+      _field[index] = {
         x: x,
         y: y,
         color: Color.Black,
@@ -21,7 +21,7 @@ function generateField() {
     }
   }
 
-  return newField;
+  return _field;
 }
 
 function generateTetramino() {

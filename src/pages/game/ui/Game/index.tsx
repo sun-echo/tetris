@@ -1,14 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import FieldCell from '../FieldCell'
 import { Cell, Field, Shape } from '../../lib/types';
-import { generateField, generateTetramino, getPointFieldIndex, placeShapeOnField } from '../../lib/utils';
+import { generateTetramino, getPointFieldIndex, placeShapeOnField } from '../../lib/utils';
 import { cloneDeep, isEmpty } from 'lodash';
 import './index.css'
+import { Color, DefaultField } from '../../lib/constants';
 
 function Game() {
-  const [field, setField] = useState<Field>({});
   const [currentShape, setCurrentShape] = useState<Shape>();
-  const [timer, setTimer] = useState<number>();
+  const [field, setField] = useState<Field>({});
+
+  const fieldSnapshot = useMemo(
+    () => placeShapeOnField(field, currentShape),
+    [field, currentShape]
+  );
 
   useEffect(() => {
     console.log('debug currentSHape', currentShape)
@@ -17,66 +22,70 @@ function Game() {
   const cells = useMemo(() => {
     const _cells: Cell[] = [];
 
-    if (isEmpty(field)) return _cells;
+    if (isEmpty(fieldSnapshot)) return _cells;
 
     for (let y = 19; y >= 0; y--) {
       for (let x = 0; x < 10; x++) {
         const index = getPointFieldIndex({ x, y });
-        _cells.push(field[index])
+        _cells.push(fieldSnapshot[index])
       }
     }
 
     return _cells;
-  }, [field]);
+  }, [fieldSnapshot]);
 
-
-  // const initTimer = useCallback(() => {
-  //   const handler = () => {
-  //     console.log('tick', currentShape)
-  //     const shape = cloneDeep(currentShape);
-  //     shape?.points.forEach((p, i) => {
-  //       console.log('points', p, i)
-  //       shape.points[i] = {
-  //         ...p,
-  //         y: p.y - 1,
-  //       }
-  //     })
-  //   }
-  //   const _timer = setInterval(handler, 1000);
-  //   console.log('debug new timer', _timer)
-  //   setTimer(_timer);
-  // }, [currentShape])
-
-  const render = useCallback(() => {
-    console.log('tick', currentShape)
-    const shape = cloneDeep(currentShape);
-    shape?.points.forEach((p, i) => {
-      console.log('points', p, i)
-      shape.points[i] = {
+  // TODO: Add chech for shape landed on other shape
+  const lowerShape = useCallback((shape?: Shape) => {
+    console.log('debug low', shape, field, shape?.points.some(p => p.y === 0) ||
+    Object.values(field).some(c => c.color !== Color.Black && shape?.points.some(p => p.y - c.y <= 1)))
+    if (
+      shape?.points.some(p => p.y === 0) ||
+      Object.values(field).some(c => (
+        c.color !== Color.Black &&
+        shape?.points.some(p => p.y - c.y <= 1)
+      ))
+    ) {
+      return;
+    }
+    const _shape = cloneDeep(shape);
+    _shape?.points.forEach((p, i) => {
+      _shape.points[i] = {
         ...p,
         y: p.y - 1,
       }
     })
-  }, [currentShape])
+    return _shape
+  }, [field])
 
-  const clearTimer = useCallback(() => {
-    clearInterval(timer);
-    setTimer(undefined);
-  }, [timer, setTimer]);
+  const handleTick = useCallback(() => {
+    setCurrentShape(shape => {
+      let _shape = lowerShape(shape);
+      if (shape && !_shape) {
+        setField(field => placeShapeOnField(field, shape))
+        _shape = generateTetramino();
+        console.log('debug shape landed. new - ', _shape);
+      }
+      return _shape
+    })
+  }, [lowerShape])
 
   useEffect(() => {
-    const _timer = setInterval(render, 1000);
-    setTimer(_timer);
-    return () => clearTimer();
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+    const timer = setInterval(() => {
+      console.log('tick', currentShape);
+      handleTick();
+    }, 100)
+
+    console.log('deb new timer', timer)
+    
+    return () => clearInterval(timer)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const init = useCallback(() => {
     const shape = generateTetramino();
     console.log('debug setCurrentShape', shape)
     setCurrentShape(shape);
-    setField(placeShapeOnField(generateField(), shape));
-    // initTimer();
+    setField(DefaultField);
   }, []);
 
   useEffect(() => {
@@ -84,16 +93,6 @@ function Game() {
     console.log('init');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // useEffect(() => () => {
-  //   clearTimer();
-  //   console.log('unmount');
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
-  useEffect(() => {
-    console.log('debug currentShape', currentShape)
-  }, [currentShape])
 
   return (
     <>

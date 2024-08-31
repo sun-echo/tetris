@@ -43,7 +43,11 @@ function getPointFieldIndex(point: Point) {
   return _x + _y;
 }
 
-function placeShapeOnField(field: Field, shape: Shape) {
+function placeShapeOnField(field: Field, shape?: Shape) {
+  if (!shape) {
+    return field
+  }
+
   const _field = cloneDeep(field);
 
   const { points, color } = shape;

@@ -1,3 +1,5 @@
+import { generateField } from "./utils";
+
 export const FieldIndexMap: Record<number, string> = {
   0: '00',
   1: '01',
@@ -74,3 +76,5 @@ export const DefaultPoints = {
     { x: 5, y: 20 },
   ],
 }
+
+export const DefaultField = generateField();

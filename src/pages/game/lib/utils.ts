@@ -19,7 +19,7 @@ function generateField() {
       };
     }
   }
-  
+
   return _field;
 }
 
@@ -68,9 +68,60 @@ function placeShapeOnField(field: Field, shape?: Shape) {
   return _field;
 }
 
+function rotateShape(shape?: Shape) {
+  if (!shape) {
+    return shape
+  }
+  const { type, points } = shape;
+  const { x, y } = points[0];
+
+  if (type === 'O') {
+    return shape
+  }
+  if (type === 'I') {
+    if (x === points[1].x) {
+      return {
+        ...shape,
+        points: [
+          { x: x - 2, y: y - 1 },
+          { x: x - 1, y: y - 1 },
+          { x: x, y: y - 1 },
+          { x: x + 1, y: y - 1 }
+        ]
+      }
+    } else {
+      return {
+        ...shape,
+        points: [
+          { x: x + 2, y: y + 1 },
+          { x: x + 2, y: y },
+          { x: x + 2, y: y - 1 },
+          { x: x + 2, y: y - 2 }
+        ]
+      }
+    }
+  }
+  if (type === 'S') {
+    return shape
+  }
+  if (type === 'Z') {
+    return shape
+  }
+  if (type === 'L') {
+    return shape
+  }
+  if (type === 'J') {
+    return shape
+  }
+  if (type === 'T') {
+    return shape
+  }
+}
+
 export {
   generateField,
   generateTetramino,
   placeShapeOnField,
   getPointFieldIndex,
+  rotateShape,
 }

@@ -28,7 +28,8 @@ export const FieldIndexMap: Record<number, string> = {
 export enum Color {
   Red = 'red',
   Blue = 'blue',
-  Pink = 'pink',
+  Green = 'green',
+  Grey = 'grey',
   Black = 'black',
 };
 

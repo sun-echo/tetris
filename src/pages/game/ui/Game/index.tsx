@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import FieldCell from '../FieldCell'
 import { Cell, Field, Shape } from '../../lib/types';
-import { generateTetramino, getPointFieldIndex, placeShapeOnField } from '../../lib/utils';
+import { generateTetramino, getPointFieldIndex, placeShapeOnField, rotateShape } from '../../lib/utils';
 import { cloneDeep, isEmpty } from 'lodash';
 import { Color, DefaultField, TICKRATE } from '../../lib/constants';
 import './index.css'
@@ -78,6 +78,52 @@ function Game() {
     })
   }, [isShapeDropped])
 
+  const handleMoveLeft = useCallback(() => {
+    setCurrentShape(shape => {
+      let _shape = cloneDeep(shape) as Shape;
+
+      if (
+        shape?.points.some(p => p.x === 0)
+      ) {
+        return shape
+      } else {
+        _shape?.points.forEach((p, i) => {
+          _shape.points[i] = {
+            ...p,
+            x: p.x - 1,
+          }
+        })
+      }
+
+      return _shape
+    })
+  }, [])
+
+  const handleMoveRight = useCallback(() => {
+    setCurrentShape(shape => {
+      let _shape = cloneDeep(shape) as Shape;
+
+      if (
+        shape?.points.some(p => p.x === 9)
+      ) {
+        return shape
+      } else {
+        _shape?.points.forEach((p, i) => {
+          _shape.points[i] = {
+            ...p,
+            x: p.x + 1,
+          }
+        })
+      }
+
+      return _shape
+    })
+  }, []);
+
+  const handleRotate = useCallback(() => {
+    setCurrentShape(shape => rotateShape(shape))
+  }, []);
+
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (gameOver) {
       removeEventListener("keydown", handleKeyDown);
@@ -88,15 +134,15 @@ function Game() {
       handleMoveDown();
     }
     if (event.code === 'ArrowLeft') {
-      console.log('debug handleKeyDown ArrowLeft', event);
+      handleMoveLeft();
     }
     if (event.code === 'ArrowUp') {
-      console.log('debug handleKeyDown ArrowUp', event);
+      handleRotate();
     }
     if (event.code === 'ArrowRight') {
-      console.log('debug handleKeyDown ArrowRight', event);
+      handleMoveRight();
     }
-  }, [gameOver, handleMoveDown]);
+  }, [gameOver, handleMoveDown, handleMoveLeft, handleMoveRight]);
 
   useEffect(() => {
     const timer = setInterval(() => {

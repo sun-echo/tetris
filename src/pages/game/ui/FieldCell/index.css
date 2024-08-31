@@ -9,7 +9,7 @@
 .field-cell::after {
    content: '';
    position: absolute;
-   background-color: green;
+   background-color: rgb(255, 0, 221);
    z-index: 1;
 }
 

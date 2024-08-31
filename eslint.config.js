@@ -7,11 +7,24 @@ import tseslint from 'typescript-eslint'
 export default tseslint.config(
   { ignores: ['dist'] },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+       "eslint:recommended",
+       "plugin:react/recommended",
+       'plugin:react/jsx-runtime',
+       'prettier',
+       'airbnb'
+      ],
+    files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        "ecmaFeatures": {
+          "jsx": true
+        }
+      }
     },
     plugins: {
       'react-hooks': reactHooks,

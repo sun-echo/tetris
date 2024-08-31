@@ -12,7 +12,6 @@ function generateField() {
   for (let x = 0; x < 10; x++) {
     for (let y = 0; y < 20; y++) {
       const index = FieldIndexMap[x] + FieldIndexMap[y];
-
       _field[index] = {
         x: x,
         y: y,
@@ -20,7 +19,7 @@ function generateField() {
       };
     }
   }
-
+  
   return _field;
 }
 

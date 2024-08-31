@@ -1,5 +1,7 @@
 import { generateField } from "./utils";
 
+export const TICKRATE = 100;
+
 export const FieldIndexMap: Record<number, string> = {
   0: '00',
   1: '01',

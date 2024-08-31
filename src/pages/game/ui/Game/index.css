@@ -6,7 +6,15 @@
 
 .game-field {
   display: grid;
+  position: relative;
   grid-template-columns: repeat(10, 250px);
   grid-template-rows: repeat(10, 250px);
   overflow: hidden;
+}
+
+.game-over {
+  position: absolute;
+  top: 350px;
+  font-size: 500px;
+  z-index: 1000;
 }

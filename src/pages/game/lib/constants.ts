@@ -61,8 +61,8 @@ export const DefaultPoints = {
     { x: 5, y: 19 },
   ],
   'L': [
-    { x: 4, y: 19 },
     { x: 5, y: 19 },
+    { x: 4, y: 19 },
     { x: 4, y: 20 },
     { x: 4, y: 21 },
   ],

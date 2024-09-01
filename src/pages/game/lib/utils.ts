@@ -160,98 +160,108 @@ function rotateShape(shape?: Shape) {
   const { type, points } = shape;
   const { x, y } = points[0];
 
+  const xValues = points.map(p => p.x);
+  const yValues = points.map(p => p.y);
+  const minX = Math.min(...xValues);
+  const maxX = Math.max(...xValues);
+  const minY = Math.min(...yValues);
+  const maxY = Math.max(...yValues);
+  const deltaX = maxX - minX;
+
   if (type === 'O') {
     return shape;
   }
 
+  let _points: Point[] = [];
+
   if (type === 'I') {
     if (x === points[1].x) {
-      return {
-        ...shape,
-        points: [
-          { x: x - 2, y: y - 1 },
-          { x: x - 1, y: y - 1 },
-          { x: x, y: y - 1 },
-          { x: x + 1, y: y - 1 }
-        ]
-      };
+      _points = [
+        { x: x - 2, y: y - 1 },
+        { x: x - 1, y: y - 1 },
+        { x: x, y: y - 1 },
+        { x: x + 1, y: y - 1 }
+      ];
     } else {
-      return {
-        ...shape,
-        points: [
-          { x: x + 2, y: y + 1 },
-          { x: x + 2, y: y },
-          { x: x + 2, y: y - 1 },
-          { x: x + 2, y: y - 2 }
-        ]
-      };
+      _points = [
+        { x: x + 2, y: y + 1 },
+        { x: x + 2, y: y },
+        { x: x + 2, y: y - 1 },
+        { x: x + 2, y: y - 2 }
+      ];
     }
-  }
-
-  if (type === 'S') {
-    const xValues = points.map(p => p.x);
-    const deltaX = Math.max(...xValues) - Math.min(...xValues);
-
+  } else if (type === 'S') {
     if (deltaX === 2) {
-      return {
-        ...shape,
-        points: [
-          { x: x, y: y + 2 },
-          { x: x, y: y + 1},
-          { x: x + 1, y: y + 1 },
-          { x: x + 1, y: y }
-        ]
-      };
+      _points = [
+        { x: x, y: y + 2 },
+        { x: x, y: y + 1},
+        { x: x + 1, y: y + 1 },
+        { x: x + 1, y: y }
+      ];
     } else {
-      return {
-        ...shape,
-        points: [
-          { x: x, y: y - 2 },
-          { x: x + 1, y: y - 2 },
-          { x: x + 1, y: y - 1 },
-          { x: x + 2, y: y - 1 }
-        ]
-      };
+      _points = [
+        { x: x, y: y - 2 },
+        { x: x + 1, y: y - 2 },
+        { x: x + 1, y: y - 1 },
+        { x: x + 2, y: y - 1 }
+      ];
     }
-  }
-
-  if (type === 'Z') {
-    const xValues = points.map(p => p.x);
-    const deltaX = Math.max(...xValues) - Math.min(...xValues);
-
+  } else if (type === 'Z') {
     if (deltaX === 2) {
-      return {
-        ...shape,
-        points: [
-          { x: x + 2, y: y + 1 },
-          { x: x + 2, y: y },
-          { x: x + 1, y: y },
-          { x: x + 1, y: y - 1 }
-        ]
-      };
+      _points = [
+        { x: x + 2, y: y + 1 },
+        { x: x + 2, y: y },
+        { x: x + 1, y: y },
+        { x: x + 1, y: y - 1 }
+      ];
     } else {
-      return {
-        ...shape,
-        points: [
-          { x: x - 2, y: y - 1 },
-          { x: x - 1, y: y - 1 },
-          { x: x - 1, y: y - 2 },
-          { x: x, y: y - 2 }
-        ]
-      };
+      _points = [
+        { x: x - 2, y: y - 1 },
+        { x: x - 1, y: y - 1 },
+        { x: x - 1, y: y - 2 },
+        { x: x, y: y - 2 }
+      ];
     }
+  } else if (type === 'L') {
+    console.log('debug L', x, y, maxX, minY)
+    if (x === maxX && y === minY) {
+      _points =  [
+        { x: x - 2, y: y + 1 },
+        { x: x - 2, y: y + 2 },
+        { x: x - 1, y: y + 2 },
+        { x: x, y: y + 2 }
+      ]
+    } else if (x === minX && y === minY) {
+      _points =  [
+        { x: x, y: y + 1 },
+        { x: x + 1, y: y + 1 },
+        { x: x + 1, y: y },
+        { x: x + 1, y: y - 1 }
+      ]
+    } else if (x === minX && y === maxY) {
+      _points =  [
+        { x: x + 2, y: y - 1 },
+        { x: x + 2, y: y - 2 },
+        { x: x + 1, y: y - 2 },
+        { x: x, y: y - 2 }
+      ]
+    } else if (x === maxX && y === maxY) {
+      _points =  [
+        { x: x, y: y - 1 },
+        { x: x - 1, y: y - 1 },
+        { x: x - 1, y: y },
+        { x: x - 1, y: y + 1 }
+      ]
+    }
+  } else if (type === 'J') {
+    _points = shape.points
+  } else if (type === 'T') {
+    _points = shape.points
   }
 
-  if (type === 'L') {
-    return shape
-  }
-
-  if (type === 'J') {
-    return shape
-  }
-
-  if (type === 'T') {
-    return shape
+  return {
+    ...shape,
+    points: _points
   }
 }
 

@@ -26,11 +26,11 @@ export const FieldIndexMap: Record<number, string> = {
 };
 
 export enum Color {
-  Red = 'red',
   Blue = 'blue',
   Green = 'green',
   Grey = 'grey',
   Black = 'black',
+  Olive = 'olive'
 };
 
 export const Shapes = ['O','I','S','Z','L','J','T'] as const;

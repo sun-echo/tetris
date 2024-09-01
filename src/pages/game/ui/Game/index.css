@@ -4,17 +4,24 @@
   text-align: center;
 }
 
+.page {
+  height: 100vh;
+  width: 100%;
+}
+
 .game-field {
   display: grid;
   position: relative;
-  grid-template-columns: repeat(10, 250px);
-  grid-template-rows: repeat(10, 250px);
+  grid-template-columns: repeat(10, 40px);
+  grid-template-rows: repeat(10, 40px);
   overflow: hidden;
 }
 
 .game-over {
   position: absolute;
+  color: rgb(255, 0, 0);
   top: 350px;
-  font-size: 500px;
+  left: 80px;
+  font-size: 50px;
   z-index: 1000;
 }

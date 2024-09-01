@@ -16,7 +16,6 @@ import './index.css'
 
 /**
  * TODO:
- * Fix sizes
  * Fix eslint & prettier
  */
 
@@ -24,6 +23,16 @@ function Game() {
   const [field, setField] = useState<Field>({});
   const [currentShape, setCurrentShape] = useState<Shape>();
   const [gameOver, setGameOver] = useState(false);
+
+  const init = useCallback(() => {
+    const shape = generateShape();
+    setCurrentShape(shape);
+    setField(DefaultField);
+  }, []);
+
+  useEffect(() => {
+    init();
+  }, [])
 
   const fieldSnapshot = useMemo(
     () => placeShapeOnField(field, currentShape),
@@ -35,19 +44,19 @@ function Game() {
     [field]
   )
 
-  const cells = useMemo(() => {
-    const _cells: Cell[] = [];
+  const fieldCells = useMemo(() => {
+    const cells: Cell[] = [];
 
-    if (isEmpty(fieldSnapshot)) return _cells;
+    if (isEmpty(fieldSnapshot)) return cells;
 
     for (let y = 19; y >= 0; y--) {
       for (let x = 0; x < 10; x++) {
         const index = getPointFieldIndex({ x, y });
-        _cells.push(fieldSnapshot[index])
+        cells.push(fieldSnapshot[index])
       }
     }
 
-    return _cells;
+    return cells;
   }, [fieldSnapshot]);
 
   const isShapeDropped = useCallback((shape?: Shape) => (
@@ -140,7 +149,9 @@ function Game() {
   const handleRotate = useCallback(() => {
     setCurrentShape(shape => {
       const rotatedShape = rotateAndPlace(shape);
-      const collision = rotatedShape && isCollision(rotatedShape, occupiedCells);
+      const collision =
+        rotatedShape &&
+        isCollision(rotatedShape, occupiedCells);
 
       if (collision) {
         return shape;
@@ -184,21 +195,10 @@ function Game() {
     }
   }, [gameOver, handleKeyDown, handleMoveDown])
 
-  const init = useCallback(() => {
-    const shape = generateShape();
-    setCurrentShape(shape);
-    setField(DefaultField);
-  }, []);
-
-  useEffect(() => {
-    init();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
-    <>
+    <div className="page">
       <div className="game-field">
-        {cells.map((cell, index) => (
+        {fieldCells.map((cell, index) => (
           <FieldCell key={index} cell={cell} />
         ))}
 
@@ -206,7 +206,7 @@ function Game() {
           Game Over!
         </div>)}
       </div>
-    </>
+    </div>
   )
 }
 

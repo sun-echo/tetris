@@ -223,30 +223,29 @@ function rotateShape(shape?: Shape) {
       ];
     }
   } else if (type === 'L') {
-    console.log('debug L', x, y, maxX, minY)
     if (x === maxX && y === minY) {
-      _points =  [
+      _points = [
         { x: x - 2, y: y + 1 },
         { x: x - 2, y: y + 2 },
         { x: x - 1, y: y + 2 },
         { x: x, y: y + 2 }
       ]
     } else if (x === minX && y === minY) {
-      _points =  [
+      _points = [
         { x: x, y: y + 1 },
         { x: x + 1, y: y + 1 },
         { x: x + 1, y: y },
         { x: x + 1, y: y - 1 }
       ]
     } else if (x === minX && y === maxY) {
-      _points =  [
+      _points = [
         { x: x + 2, y: y - 1 },
         { x: x + 2, y: y - 2 },
         { x: x + 1, y: y - 2 },
         { x: x, y: y - 2 }
       ]
     } else if (x === maxX && y === maxY) {
-      _points =  [
+      _points = [
         { x: x, y: y - 1 },
         { x: x - 1, y: y - 1 },
         { x: x - 1, y: y },
@@ -254,9 +253,65 @@ function rotateShape(shape?: Shape) {
       ]
     }
   } else if (type === 'J') {
-    _points = shape.points
+    if (x === minX && y === minY) {
+      _points = [
+        { x: x, y: y + 1 },
+        { x: x, y: y },
+        { x: x + 1, y: y },
+        { x: x + 2, y: y }
+      ]
+    } else if (x === minX && y === maxY) {
+      _points = [
+        { x: x + 2, y: y + 1 },
+        { x: x + 1, y: y + 1 },
+        { x: x + 1, y: y },
+        { x: x + 1, y: y - 1 }
+      ]
+    } else if (x === maxX && y === maxY) {
+      _points = [
+        { x: x, y: y - 1 },
+        { x: x , y: y },
+        { x: x - 1, y: y },
+        { x: x - 2, y: y }
+      ]
+    } else if (x === maxX && y === minY) {
+      _points = [
+        { x: x - 2, y: y - 1 },
+        { x: x - 1, y: y - 1 },
+        { x: x - 1, y: y },
+        { x: x - 1, y: y + 1 }
+      ]
+    }
   } else if (type === 'T') {
-    _points = shape.points
+    if (y === minY) {
+      _points = [
+        { x: x - 1, y: y + 1 },
+        { x: x, y: y },
+        { x: x, y: y + 1 },
+        { x: x, y: y + 2 }
+      ]
+    } else if (x === minX) {
+      _points = [
+        { x: x + 1, y: y + 1 },
+        { x: x, y: y },
+        { x: x + 1, y: y },
+        { x: x + 2, y: y }
+      ]
+    } else if (y === maxY) {
+      _points = [
+        { x: x + 1, y: y - 1 },
+        { x: x , y: y },
+        { x: x, y: y - 1 },
+        { x: x, y: y - 2 }
+      ]
+    } else if (x === maxX) {
+      _points = [
+        { x: x - 1, y: y - 1 },
+        { x: x, y: y },
+        { x: x - 1, y: y },
+        { x: x - 2, y: y }
+      ]
+    }
   }
 
   return {

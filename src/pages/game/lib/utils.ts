@@ -23,15 +23,13 @@ function generateField() {
   return _field;
 }
 
-function generateTetramino() {
+function generateShape(): Shape {
   const shapeType = getRandomShape();
-  const tetramino: Shape = {
+  return {
     type: shapeType,
     points: DefaultPoints[shapeType],
     color: getRandomColor(),
-  }
-
-  return tetramino;
+  };
 }
 
 function getPointFieldIndex(point: Point) {
@@ -73,7 +71,6 @@ function moveX(shape: Shape, offset: number) {
   }
 
   const _shape = cloneDeep(shape);
-
   _shape?.points.forEach((p, i) => {
     _shape.points[i] = {
       ...p,
@@ -90,7 +87,6 @@ function moveY(shape: Shape, offset: number) {
   }
 
   const _shape = cloneDeep(shape);
-
   _shape?.points.forEach((p, i) => {
     _shape.points[i] = {
       ...p,
@@ -105,7 +101,6 @@ function fixPosition(shape?: Shape) {
   if (!shape) return shape;
 
   const { points } = shape;
-
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
@@ -147,19 +142,9 @@ function fixPosition(shape?: Shape) {
   return moveX(moveY(shape, deltaY), deltaX);
 };
 
-/**
- * TODO:
- * - Implement mapping for all shapes
- * - Prevent collisions w/ other shapes
- */
-function rotateShape(shape?: Shape) {
-  if (!shape) {
-    return shape
-  }
-
+const getRotatedPoints  = (shape: Shape) => {
   const { type, points } = shape;
   const { x, y } = points[0];
-
   const xValues = points.map(p => p.x);
   const yValues = points.map(p => p.y);
   const minX = Math.min(...xValues);
@@ -168,22 +153,16 @@ function rotateShape(shape?: Shape) {
   const maxY = Math.max(...yValues);
   const deltaX = maxX - minX;
 
-  if (type === 'O') {
-    return shape;
-  }
-
-  let _points: Point[] = [];
-
   if (type === 'I') {
     if (x === points[1].x) {
-      _points = [
+      return [
         { x: x - 2, y: y - 1 },
         { x: x - 1, y: y - 1 },
         { x: x, y: y - 1 },
         { x: x + 1, y: y - 1 }
       ];
     } else {
-      _points = [
+      return [
         { x: x + 2, y: y + 1 },
         { x: x + 2, y: y },
         { x: x + 2, y: y - 1 },
@@ -192,14 +171,14 @@ function rotateShape(shape?: Shape) {
     }
   } else if (type === 'S') {
     if (deltaX === 2) {
-      _points = [
+      return [
         { x: x, y: y + 2 },
         { x: x, y: y + 1},
         { x: x + 1, y: y + 1 },
         { x: x + 1, y: y }
       ];
     } else {
-      _points = [
+      return [
         { x: x, y: y - 2 },
         { x: x + 1, y: y - 2 },
         { x: x + 1, y: y - 1 },
@@ -208,14 +187,14 @@ function rotateShape(shape?: Shape) {
     }
   } else if (type === 'Z') {
     if (deltaX === 2) {
-      _points = [
+      return [
         { x: x + 2, y: y + 1 },
         { x: x + 2, y: y },
         { x: x + 1, y: y },
         { x: x + 1, y: y - 1 }
       ];
     } else {
-      _points = [
+      return [
         { x: x - 2, y: y - 1 },
         { x: x - 1, y: y - 1 },
         { x: x - 1, y: y - 2 },
@@ -224,28 +203,28 @@ function rotateShape(shape?: Shape) {
     }
   } else if (type === 'L') {
     if (x === maxX && y === minY) {
-      _points = [
+      return [
         { x: x - 2, y: y + 1 },
         { x: x - 2, y: y + 2 },
         { x: x - 1, y: y + 2 },
         { x: x, y: y + 2 }
       ]
     } else if (x === minX && y === minY) {
-      _points = [
+      return [
         { x: x, y: y + 1 },
         { x: x + 1, y: y + 1 },
         { x: x + 1, y: y },
         { x: x + 1, y: y - 1 }
       ]
     } else if (x === minX && y === maxY) {
-      _points = [
+      return [
         { x: x + 2, y: y - 1 },
         { x: x + 2, y: y - 2 },
         { x: x + 1, y: y - 2 },
         { x: x, y: y - 2 }
       ]
     } else if (x === maxX && y === maxY) {
-      _points = [
+      return [
         { x: x, y: y - 1 },
         { x: x - 1, y: y - 1 },
         { x: x - 1, y: y },
@@ -254,28 +233,28 @@ function rotateShape(shape?: Shape) {
     }
   } else if (type === 'J') {
     if (x === minX && y === minY) {
-      _points = [
+      return [
         { x: x, y: y + 1 },
         { x: x, y: y },
         { x: x + 1, y: y },
         { x: x + 2, y: y }
       ]
     } else if (x === minX && y === maxY) {
-      _points = [
+      return [
         { x: x + 2, y: y + 1 },
         { x: x + 1, y: y + 1 },
         { x: x + 1, y: y },
         { x: x + 1, y: y - 1 }
       ]
     } else if (x === maxX && y === maxY) {
-      _points = [
+      return [
         { x: x, y: y - 1 },
         { x: x , y: y },
         { x: x - 1, y: y },
         { x: x - 2, y: y }
       ]
     } else if (x === maxX && y === minY) {
-      _points = [
+      return [
         { x: x - 2, y: y - 1 },
         { x: x - 1, y: y - 1 },
         { x: x - 1, y: y },
@@ -284,28 +263,28 @@ function rotateShape(shape?: Shape) {
     }
   } else if (type === 'T') {
     if (y === minY) {
-      _points = [
+      return [
         { x: x - 1, y: y + 1 },
         { x: x, y: y },
         { x: x, y: y + 1 },
         { x: x, y: y + 2 }
       ]
     } else if (x === minX) {
-      _points = [
+      return [
         { x: x + 1, y: y + 1 },
         { x: x, y: y },
         { x: x + 1, y: y },
         { x: x + 2, y: y }
       ]
     } else if (y === maxY) {
-      _points = [
+      return [
         { x: x + 1, y: y - 1 },
         { x: x , y: y },
         { x: x, y: y - 1 },
         { x: x, y: y - 2 }
       ]
     } else if (x === maxX) {
-      _points = [
+      return [
         { x: x - 1, y: y - 1 },
         { x: x, y: y },
         { x: x - 1, y: y },
@@ -314,9 +293,15 @@ function rotateShape(shape?: Shape) {
     }
   }
 
+  return points;
+}
+
+function rotateShape(shape?: Shape) {
+  if (!shape) return shape
+
   return {
     ...shape,
-    points: _points
+    points: getRotatedPoints(shape)
   }
 }
 
@@ -324,12 +309,12 @@ const rotateAndPlace = (shape?: Shape) =>
   fixPosition(rotateShape(shape))
 
 export {
-  generateField,
-  generateTetramino,
-  placeShapeOnField,
-  getPointFieldIndex,
   moveX,
   moveY,
   isCollision,
-  rotateAndPlace
+  generateField,
+  generateShape,
+  rotateAndPlace,
+  placeShapeOnField,
+  getPointFieldIndex,
 }

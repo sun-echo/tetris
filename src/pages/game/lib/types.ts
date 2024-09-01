@@ -16,7 +16,6 @@ export interface Field {
 
 export type ShapeType = typeof Shapes[number];
 
-// Tetramino
 export interface Shape {
   type: ShapeType;
   points: Point[];

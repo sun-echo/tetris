@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import FieldCell from '../FieldCell'
 import { Cell, Field, Shape } from '../../lib/types';
 import {
-  generateTetramino,
+  generateShape,
   getPointFieldIndex,
   isCollision,
   moveX,
@@ -17,7 +17,6 @@ import './index.css'
 /**
  * TODO:
  * Fix sizes
- * Implement other arrows handlers
  * Fix eslint & prettier
  */
 
@@ -94,7 +93,7 @@ function Game() {
 
       setField(placeShapeOnField(field, shape));
       
-      let _shape = generateTetramino();
+      let _shape = generateShape();
  
       if (isShapeDropped(_shape)) {
         setGameOver(true);
@@ -186,7 +185,7 @@ function Game() {
   }, [gameOver, handleKeyDown, handleMoveDown])
 
   const init = useCallback(() => {
-    const shape = generateTetramino();
+    const shape = generateShape();
     setCurrentShape(shape);
     setField(DefaultField);
   }, []);

@@ -10,7 +10,7 @@ import {
   placeShapeOnField,
   rotateAndPlace
 } from '../../lib/utils';
-import {  isEmpty } from 'lodash';
+import {  cloneDeep, isEmpty } from 'lodash';
 import { Color, DefaultField, TICKRATE } from '../../lib/constants';
 import './index.css'
 
@@ -58,6 +58,31 @@ function Game() {
         shape?.points.some(p => p.y === cell.y + 1 && p.x === cell.x)
     )
   ), [occupiedCells]);
+
+  const clearFullLines = useCallback(() => {
+    const yValues = occupiedCells.map(p => p.y);
+    const minY = Math.min(...yValues);
+    const maxY = Math.max(...yValues);
+
+    for (let line = minY; line <= maxY; line++) {
+      if (occupiedCells.filter(p => p.y === line).length === 10) {
+        const _field = cloneDeep(field);
+        occupiedCells.forEach(p => {
+          const { x, y } = p;
+          if (y >= line) {
+            const index = getPointFieldIndex({ x, y });
+            const upperIndex = getPointFieldIndex({ x, y: y + 1 });
+            _field[index].color = _field[upperIndex].color;
+          }
+        })
+        setField(_field);
+      }
+    }
+  }, [field, occupiedCells])
+
+  useEffect(() => {
+    clearFullLines();
+  }, [clearFullLines])
 
   const handleMoveDown = useCallback(() => {
     setCurrentShape(shape => {

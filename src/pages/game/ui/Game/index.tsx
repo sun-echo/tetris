@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import FieldCell from '../FieldCell'
 import { Cell, Field, Shape } from '../../lib/types';
-import { generateTetramino, getPointFieldIndex, placeShapeOnField, rotateShape } from '../../lib/utils';
+import { generateTetramino, getPointFieldIndex, isCollision, moveX, moveY, placeShapeOnField, rotateShape } from '../../lib/utils';
 import { cloneDeep, isEmpty } from 'lodash';
 import { Color, DefaultField, TICKRATE } from '../../lib/constants';
 import './index.css'
@@ -14,8 +14,8 @@ import './index.css'
  */
 
 function Game() {
-  const [currentShape, setCurrentShape] = useState<Shape>();
   const [field, setField] = useState<Field>({});
+  const [currentShape, setCurrentShape] = useState<Shape>();
   const [gameOver, setGameOver] = useState(false);
 
   const fieldSnapshot = useMemo(
@@ -23,7 +23,7 @@ function Game() {
     [field, currentShape]
   );
 
-  const ocupiedCells = useMemo(
+  const occupiedCells = useMemo(
     () => Object.values(field).filter((v) => v.color !== Color.Black),
     [field]
   )
@@ -43,86 +43,80 @@ function Game() {
     return _cells;
   }, [fieldSnapshot]);
 
-  const isShapeDropped = useCallback((shape?: Shape) => {
-    return ocupiedCells.some(
+  const isShapeDropped = useCallback((shape?: Shape) => (
+    shape?.points.some(p => p.y <= 0) ||
+    occupiedCells.some(
       cell =>
         shape?.points.some(p => p.y === cell.y + 1 && p.x === cell.x)
     )
-  }, [ocupiedCells])
+  ), [occupiedCells]);
 
   const handleMoveDown = useCallback(() => {
     setCurrentShape(shape => {
-      const shapeLanded = isShapeDropped(shape);
+      if (!shape) return shape;
 
-      let _shape = cloneDeep(shape) as Shape;
+      if (!isShapeDropped(shape)) {
+        return moveY(shape, -1);
+      }
 
-      if (
-        shape?.points.some(p => p.y === 0) ||
-        shapeLanded
-      ) {
-        setField(field => placeShapeOnField(field, shape))
-        _shape = generateTetramino();
-        if (isShapeDropped(_shape)) {
-          setGameOver(true);
-        }
-      } else {
-        _shape?.points.forEach((p, i) => {
-          _shape.points[i] = {
-            ...p,
-            y: p.y - 1,
-          }
-        })
+      setField(placeShapeOnField(field, shape));
+      
+      let _shape = generateTetramino();
+ 
+      if (isShapeDropped(_shape)) {
+        setGameOver(true);
       }
 
       return _shape
     })
-  }, [isShapeDropped])
+  }, [isShapeDropped, field])
 
   const handleMoveLeft = useCallback(() => {
     setCurrentShape(shape => {
-      let _shape = cloneDeep(shape) as Shape;
+      if (!shape) return;
+      
+      const movedShape = moveX(shape, -1);
+      const collision = isCollision(movedShape, occupiedCells);
 
-      if (
-        shape?.points.some(p => p.x === 0)
-      ) {
-        return shape
-      } else {
-        _shape?.points.forEach((p, i) => {
-          _shape.points[i] = {
-            ...p,
-            x: p.x - 1,
-          }
-        })
+      const noSpace = collision || shape?.points.some(p => p.x === 0);
+
+      if (!shape || noSpace) {
+        return shape;
       }
 
-      return _shape
+      return movedShape;
     })
-  }, [])
+  }, [occupiedCells])
 
   const handleMoveRight = useCallback(() => {
     setCurrentShape(shape => {
-      let _shape = cloneDeep(shape) as Shape;
+      if (!shape) return;
+      
+      const movedShape = moveX(shape, 1);
+      const collision = isCollision(movedShape, occupiedCells);
 
-      if (
-        shape?.points.some(p => p.x === 9)
-      ) {
-        return shape
-      } else {
-        _shape?.points.forEach((p, i) => {
-          _shape.points[i] = {
-            ...p,
-            x: p.x + 1,
-          }
-        })
+      const noSpace = collision || shape?.points.some(p => p.x === 9);
+
+      if (!shape || noSpace) {
+        return shape;
       }
 
-      return _shape
+      return movedShape;
     })
-  }, []);
+  }, [occupiedCells]);
 
   const handleRotate = useCallback(() => {
-    setCurrentShape(shape => rotateShape(shape))
-  }, []);
+    setCurrentShape(shape => {
+      const rotatedShape = rotateShape(shape);
+      const collision = rotatedShape && isCollision(rotatedShape, occupiedCells);
+
+      if (collision) {
+        return shape;
+      }
+
+      return rotatedShape;
+    })
+  }, [occupiedCells]);
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (gameOver) {

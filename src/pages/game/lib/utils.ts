@@ -216,7 +216,30 @@ function rotateShape(shape?: Shape) {
   }
 
   if (type === 'Z') {
-    return shape
+    const xValues = points.map(p => p.x);
+    const deltaX = Math.max(...xValues) - Math.min(...xValues);
+
+    if (deltaX === 2) {
+      return {
+        ...shape,
+        points: [
+          { x: x + 2, y: y + 1 },
+          { x: x + 2, y: y },
+          { x: x + 1, y: y },
+          { x: x + 1, y: y - 1 }
+        ]
+      };
+    } else {
+      return {
+        ...shape,
+        points: [
+          { x: x - 2, y: y - 1 },
+          { x: x - 1, y: y - 1 },
+          { x: x - 1, y: y - 2 },
+          { x: x, y: y - 2 }
+        ]
+      };
+    }
   }
 
   if (type === 'L') {

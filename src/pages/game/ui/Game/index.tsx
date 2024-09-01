@@ -1,8 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import FieldCell from '../FieldCell'
 import { Cell, Field, Shape } from '../../lib/types';
-import { generateTetramino, getPointFieldIndex, isCollision, moveX, moveY, placeShapeOnField, rotateShape } from '../../lib/utils';
-import { cloneDeep, isEmpty } from 'lodash';
+import {
+  generateTetramino,
+  getPointFieldIndex,
+  isCollision,
+  moveX,
+  moveY,
+  placeShapeOnField,
+  rotateAndPlace
+} from '../../lib/utils';
+import {  isEmpty } from 'lodash';
 import { Color, DefaultField, TICKRATE } from '../../lib/constants';
 import './index.css'
 
@@ -107,7 +115,7 @@ function Game() {
 
   const handleRotate = useCallback(() => {
     setCurrentShape(shape => {
-      const rotatedShape = rotateShape(shape);
+      const rotatedShape = rotateAndPlace(shape);
       const collision = rotatedShape && isCollision(rotatedShape, occupiedCells);
 
       if (collision) {
@@ -150,7 +158,7 @@ function Game() {
       clearInterval(timer);
       removeEventListener("keydown", handleKeyDown);
     }
-  }, [currentShape, gameOver, handleKeyDown, handleMoveDown])
+  }, [gameOver, handleKeyDown, handleMoveDown])
 
   const init = useCallback(() => {
     const shape = generateTetramino();
@@ -167,7 +175,7 @@ function Game() {
     <>
       <div className="game-field">
         {cells.map((cell, index) => (
-          <FieldCell key={index} cell={cell}/>
+          <FieldCell key={index} cell={cell} />
         ))}
 
         {gameOver && (<div className="game-over">

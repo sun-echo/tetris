@@ -101,7 +101,9 @@ function moveY(shape: Shape, offset: number) {
   return _shape;
 } 
 
-function fixPosition(shape: Shape) {
+function fixPosition(shape?: Shape) {
+  if (!shape) return shape;
+
   const { points } = shape;
 
   let minX = Infinity;
@@ -164,7 +166,7 @@ function rotateShape(shape?: Shape) {
 
   if (type === 'I') {
     if (x === points[1].x) {
-      return fixPosition({
+      return {
         ...shape,
         points: [
           { x: x - 2, y: y - 1 },
@@ -172,9 +174,9 @@ function rotateShape(shape?: Shape) {
           { x: x, y: y - 1 },
           { x: x + 1, y: y - 1 }
         ]
-      });
+      };
     } else {
-      return fixPosition({
+      return {
         ...shape,
         points: [
           { x: x + 2, y: y + 1 },
@@ -182,30 +184,56 @@ function rotateShape(shape?: Shape) {
           { x: x + 2, y: y - 1 },
           { x: x + 2, y: y - 2 }
         ]
-      });
+      };
     }
   }
 
   if (type === 'S') {
-    return fixPosition(shape)
+    const xValues = points.map(p => p.x);
+    const deltaX = Math.max(...xValues) - Math.min(...xValues);
+
+    if (deltaX === 2) {
+      return {
+        ...shape,
+        points: [
+          { x: x, y: y + 2 },
+          { x: x, y: y + 1},
+          { x: x + 1, y: y + 1 },
+          { x: x + 1, y: y }
+        ]
+      };
+    } else {
+      return {
+        ...shape,
+        points: [
+          { x: x, y: y - 2 },
+          { x: x + 1, y: y - 2 },
+          { x: x + 1, y: y - 1 },
+          { x: x + 2, y: y - 1 }
+        ]
+      };
+    }
   }
 
   if (type === 'Z') {
-    return fixPosition(shape)
+    return shape
   }
 
   if (type === 'L') {
-    return fixPosition(shape)
+    return shape
   }
 
   if (type === 'J') {
-    return fixPosition(shape)
+    return shape
   }
 
   if (type === 'T') {
-    return fixPosition(shape)
+    return shape
   }
 }
+
+const rotateAndPlace = (shape?: Shape) =>
+  fixPosition(rotateShape(shape))
 
 export {
   generateField,
@@ -214,6 +242,6 @@ export {
   getPointFieldIndex,
   moveX,
   moveY,
-  rotateShape,
   isCollision,
+  rotateAndPlace
 }

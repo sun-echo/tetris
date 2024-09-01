@@ -13,7 +13,7 @@ export default function FieldCell(props: FieldCellProps) {
   return (
     <div
       className={`field-cell field-cell--${x}-${y}`}
-      style={{ backgroundColor: color}}
+      style={{ backgroundColor: color }}
     />
   )
 }

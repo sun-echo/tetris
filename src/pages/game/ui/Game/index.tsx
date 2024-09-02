@@ -13,6 +13,7 @@ import {
 import {  cloneDeep, isEmpty } from 'lodash';
 import { Color, DefaultField, TICKRATE } from '../../lib/constants';
 import './index.css'
+import Controls from '../Controls';
 
 /**
  * TODO:
@@ -208,6 +209,13 @@ function Game() {
           Game Over!
         </div>)}
       </div>
+
+      <Controls
+        onDown={handleMoveDown}
+        onLeft={handleMoveLeft}
+        onRight={handleMoveRight}
+        onUp={handleRotate}
+      />
     </div>
   )
 }

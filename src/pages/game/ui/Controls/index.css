@@ -1,0 +1,25 @@
+
+.buttons-container {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  margin-top: 25px;
+  font-size: 50px;
+  user-select: none;
+}
+
+@media (max-width: 990px) {
+  .buttons-container {
+    display: flex;
+  }
+}
+
+.buttons-container span {
+  font-size: 50px !important;
+}
+
+.vertical-buttons {
+  display: flex;
+  flex-direction: column;
+  margin-left: 100px;
+}

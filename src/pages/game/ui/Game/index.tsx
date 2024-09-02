@@ -16,7 +16,9 @@ import './index.css'
 
 /**
  * TODO:
- * Fix eslint & prettier
+ * - Fix eslint & prettier
+ * - Implement next figure display
+ * - Score, lines
  */
 
 function Game() {
@@ -196,7 +198,7 @@ function Game() {
   }, [gameOver, handleKeyDown, handleMoveDown])
 
   return (
-    <div className="page">
+    <div className="tetris-container">
       <div className="game-field">
         {fieldCells.map((cell, index) => (
           <FieldCell key={index} cell={cell} />

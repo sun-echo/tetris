@@ -1,25 +1,29 @@
 #root {
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
-.page {
-  height: 100vh;
-  width: 100%;
+.tetris-container {
+  margin: 0 auto;
+  height: 100%;
+  max-width: 450px;
+  width: 100vw;
 }
 
 .game-field {
+  width: 100%;
+  aspect-ratio: 0.5;
   display: grid;
   position: relative;
-  grid-template-columns: repeat(10, 40px);
-  grid-template-rows: repeat(10, 40px);
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(20, 1fr);
   overflow: hidden;
+  border: 1px solid rgb(105, 105, 105);
 }
 
 .game-over {
   position: absolute;
-  color: rgb(255, 0, 0);
+  color: rgb(200, 23, 62);
   top: 350px;
   left: 80px;
   font-size: 50px;

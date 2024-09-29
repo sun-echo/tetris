@@ -1,13 +1,18 @@
 import './index.css'
 
+
 interface IControlsProps {
-  onUp: () => void,
-  onDown: () => void,
-  onLeft: () => void,
-  onRight: () => void,
+  handlers: {
+    onUp: () => void,
+    onDown: () => void,
+    onLeft: () => void,
+    onRight: () => void,
+  }
 }
 
-export default function Controls({ onDown, onLeft,  onRight, onUp }: IControlsProps) {
+export default function Controls({ handlers }: IControlsProps) {
+  const { onDown, onLeft,  onRight, onUp } = handlers;
+
   return (
     <div className="buttons-container">
       <span className="material-icons" onClick={onLeft}>arrow_circle_left</span>

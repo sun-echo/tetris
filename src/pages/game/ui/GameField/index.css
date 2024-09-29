@@ -1,0 +1,10 @@
+.game-field {
+  width: 100%;
+  aspect-ratio: 0.5;
+  display: grid;
+  position: relative;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(20, 1fr);
+  overflow: hidden;
+  border: 1px solid rgb(105, 105, 105);
+}

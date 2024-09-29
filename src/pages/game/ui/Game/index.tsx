@@ -14,17 +14,19 @@ import {  cloneDeep, isEmpty } from 'lodash';
 import { Color, DefaultField, TICKRATE } from '../../lib/constants';
 import './index.css'
 import Controls from '../Controls';
+import { Score } from '../Score';
 
 /**
  * TODO:
  * - Fix eslint & prettier
  * - Implement next figure display
- * - Score, lines
+ * - Design game over message
  */
 
-function Game() {
+export function Game() {
   const [field, setField] = useState<Field>({});
   const [currentShape, setCurrentShape] = useState<Shape>();
+  const [score, setScore] = useState<number>(0);
   const [gameOver, setGameOver] = useState(false);
 
   const init = useCallback(() => {
@@ -75,6 +77,8 @@ function Game() {
     const minY = Math.min(...yValues);
     const maxY = Math.max(...yValues);
 
+    let clearedLines: 0|1|2|3|4 = 0;
+
     for (let line = minY; line <= maxY; line++) {
       if (occupiedCells.filter(p => p.y === line).length === 10) {
         const _field = cloneDeep(field);
@@ -87,9 +91,26 @@ function Game() {
           }
         })
         setField(_field);
+        clearedLines++;
       }
     }
-  }, [field, occupiedCells])
+
+    let reward = 0;
+
+    if (clearedLines === 0) {
+      reward = 0;
+    } else if (clearedLines === 1) {
+      reward = 100;
+    } else if (clearedLines === 2) {
+      reward = 300;
+    } else if (clearedLines === 3) {
+      reward = 700;
+    } else if (clearedLines === 4) {
+      reward = 1500;
+    }
+
+    setScore(score + reward);
+  }, [field, occupiedCells, score])
 
   useEffect(() => {
     clearFullLines();
@@ -210,6 +231,8 @@ function Game() {
         </div>)}
       </div>
 
+      <Score value={score} />
+
       <Controls
         onDown={handleMoveDown}
         onLeft={handleMoveLeft}
@@ -219,5 +242,3 @@ function Game() {
     </div>
   )
 }
-
-export default Game

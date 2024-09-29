@@ -4,6 +4,7 @@
 }
 
 .tetris-container {
+  position: relative;
   margin: 0 auto;
   height: 100%;
   max-width: 450px;

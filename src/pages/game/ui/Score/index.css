@@ -1,0 +1,17 @@
+.score {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  width: 200px;
+  height: 150px;
+  top: 200px;
+  right: -250px;
+  background: rgb(35, 8, 155);
+  justify-content: center;
+}
+
+.score__title,
+.score__value {
+  font-size: 30px;
+  color: rgb(23, 238, 34);
+}

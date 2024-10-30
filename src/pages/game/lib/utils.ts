@@ -1,15 +1,26 @@
 import sample from 'lodash/sample';
 import cloneDeep from 'lodash/cloneDeep';
-import { Color, DefaultPoints, FieldIndexMap, Shapes } from '../lib/constants';
-import { Field, Point, Shape } from '../lib/types';
+import minBy from 'lodash/minBy'
+import isEmpty from 'lodash/isEmpty'
+import { Color, DefaultPoints, FieldIndexMap, GAME_FIELD_SIZE_X, GAME_FIELD_SIZE_Y, PREVIEW_SIZE, Shapes } from '../lib/constants';
+import { Cell, Field, Point, Shape } from '../lib/types';
 
 const getRandomColor = () => sample(Object.values(Color).filter(v => v !== Color.Black)) as Color;
 const getRandomShape = () => Shapes[Shapes.length * Math.random() | 0];
 
-function generateField() {
+function generateShape(): Shape {
+  const shapeType = getRandomShape();
+  return {
+    type: shapeType,
+    points: DefaultPoints[shapeType],
+    color: getRandomColor(),
+  };
+}
+
+function generateField(sizeX: number, sizeY: number) {
   const field: Field = {};
-  for (let x = 0; x < 10; x++) {
-    for (let y = 0; y < 20; y++) {
+  for (let x = 0; x < sizeX; x++) {
+    for (let y = 0; y < sizeY; y++) {
       const index = FieldIndexMap[x] + FieldIndexMap[y];
       field[index] = {
         x: x,
@@ -21,14 +32,44 @@ function generateField() {
   return field;
 }
 
-function generateShape(): Shape {
-  const shapeType = getRandomShape();
-  return {
-    type: shapeType,
-    points: DefaultPoints[shapeType],
-    color: getRandomColor(),
-  };
+function generateGameField() {
+  return generateField(
+    GAME_FIELD_SIZE_X,
+    GAME_FIELD_SIZE_Y
+  );
 }
+
+function generatePreview() {
+  return generateField(PREVIEW_SIZE, PREVIEW_SIZE);
+}
+
+function getFieldCells (field: Field, sizeX: number, sizeY: number) {
+  const cells: Cell[] = [];
+
+  if (isEmpty(field)) return cells;
+
+  for (let y = sizeY - 1; y >= 0; y--) {
+    for (let x = 0; x < sizeX; x++) {
+      const index = getPointFieldIndex({ x, y });
+      cells.push(field[index])
+    }
+  }
+
+  return cells;
+}
+
+
+const getPreviewCells = (field: Field) => getFieldCells(
+  field,
+  PREVIEW_SIZE,
+  PREVIEW_SIZE
+)
+
+const getGameFieldCells = (field: Field) => getFieldCells(
+  field,
+  GAME_FIELD_SIZE_X,
+  GAME_FIELD_SIZE_Y
+)
 
 function getPointFieldIndex(point: Point) {
   const { x, y } = point;
@@ -94,7 +135,11 @@ function moveY(shape: Shape, offset: number) {
   });
 
   return _shape;
-} 
+}
+
+function moveXY(shape: Shape, offsetX: number, offsetY: number) {
+  return moveY(moveX(shape, offsetX), offsetY)
+}
 
 const getBorderPoints = (points: Point[]) => {
   const xValues = points.map(p => p.x);
@@ -112,7 +157,7 @@ const getBorderPoints = (points: Point[]) => {
   }
 }
 
-function fixPosition(shape?: Shape) {
+function fixPosition(shape: Shape) {
   if (!shape) return shape;
 
   const { points } = shape;
@@ -143,10 +188,29 @@ function fixPosition(shape?: Shape) {
     return shape;
   }
   
-  return moveX(moveY(shape, deltaY), deltaX);
+  return moveXY(shape, deltaX, deltaY);
 };
 
-const getRotatedPoints  = (shape: Shape) => {
+const normalizeShape = (shape?: Shape) => {
+  if (!shape) return shape;
+
+  const minX = minBy(shape.points, p => p.x)?.x;
+  const minY = minBy(shape.points, p => p.y)?.y;
+
+  if (!minX || !minY) {
+    return shape;
+  }
+
+  return {
+    ...shape,
+    points: shape.points.map(p => ({
+      x: p.x - minX,
+      y: p.y - minY
+    }))
+  }
+}
+
+const getRotatedPoints = (shape: Shape) => {
   const { type, points } = shape;
   const { x, y } = points[0];
 
@@ -302,7 +366,7 @@ const getRotatedPoints  = (shape: Shape) => {
   return points;
 }
 
-function rotateShape(shape?: Shape) {
+function rotateShape(shape: Shape) {
   if (!shape) return shape
 
   return {
@@ -311,16 +375,20 @@ function rotateShape(shape?: Shape) {
   }
 }
 
-const rotateAndPlace = (shape?: Shape) =>
+const rotateAndPlace = (shape: Shape) =>
   fixPosition(rotateShape(shape))
 
 export {
   moveX,
   moveY,
   isCollision,
-  generateField,
-  generateShape,
+  normalizeShape,
+  getPreviewCells,
+  getGameFieldCells,
   rotateAndPlace,
+  generateShape,
+  generatePreview,
+  generateGameField,
   placeShapeOnField,
   getPointFieldIndex,
 }

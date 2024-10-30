@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Cell, Field, Shape } from '../../lib/types';
 import {
   generateShape,
+  getGameFieldCells,
   getPointFieldIndex,
   isCollision,
   moveX,
@@ -10,7 +11,7 @@ import {
   rotateAndPlace
 } from '../../lib/utils';
 import {  cloneDeep, isEmpty } from 'lodash';
-import { Color, DefaultField, TICKRATE } from '../../lib/constants';
+import { Color, DefaultField, GAME_FIELD_SIZE_X, GAME_FIELD_SIZE_Y, PREVIEW_SIZE, TICKRATE } from '../../lib/constants';
 
 /**
  * TODO:
@@ -20,20 +21,11 @@ import { Color, DefaultField, TICKRATE } from '../../lib/constants';
  */
 
 export function useGame() {
-  const [field, setField] = useState<Field>({});
-  const [currentShape, setCurrentShape] = useState<Shape>();
+  const [field, setField] = useState<Field>(DefaultField);
   const [score, setScore] = useState<number>(0);
   const [gameOver, setGameOver] = useState(false);
-
-  const init = useCallback(() => {
-    const shape = generateShape();
-    setCurrentShape(shape);
-    setField(DefaultField);
-  }, []);
-
-  useEffect(() => {
-    init();
-  }, [])
+  const [nextShape, setNextShape] = useState<Shape>(generateShape());
+  const [currentShape, setCurrentShape] = useState<Shape>(generateShape());
 
   const fieldSnapshot = useMemo(
     () => placeShapeOnField(field, currentShape),
@@ -45,20 +37,10 @@ export function useGame() {
     [field]
   )
 
-  const fieldCells = useMemo(() => {
-    const cells: Cell[] = [];
-
-    if (isEmpty(fieldSnapshot)) return cells;
-
-    for (let y = 19; y >= 0; y--) {
-      for (let x = 0; x < 10; x++) {
-        const index = getPointFieldIndex({ x, y });
-        cells.push(fieldSnapshot[index])
-      }
-    }
-
-    return cells;
-  }, [fieldSnapshot]);
+  const fieldCells = useMemo(
+    () => getGameFieldCells(fieldSnapshot),
+    [fieldSnapshot]
+  );
 
   const isShapeDropped = useCallback((shape?: Shape) => (
     shape?.points.some(p => p.y <= 0) ||
@@ -110,7 +92,8 @@ export function useGame() {
 
   useEffect(() => {
     clearFullLines();
-  }, [clearFullLines])
+  }, [clearFullLines]);
+
 
   const handleMoveDown = useCallback(() => {
     setCurrentShape(shape => {
@@ -121,20 +104,20 @@ export function useGame() {
       }
 
       setField(placeShapeOnField(field, shape));
-      
-      let _shape = generateShape();
- 
-      if (isShapeDropped(_shape)) {
+
+      if (isShapeDropped(nextShape)) {
         setGameOver(true);
       }
 
-      return _shape
+      setNextShape(generateShape());
+
+      return nextShape
     })
   }, [isShapeDropped, field])
 
   const handleMoveLeft = useCallback(() => {
     setCurrentShape(shape => {
-      if (!shape) return;
+      if (!shape) return shape;
       
       const movedShape = moveX(shape, -1);
       const collision = isCollision(movedShape, occupiedCells);
@@ -151,7 +134,7 @@ export function useGame() {
 
   const handleMoveRight = useCallback(() => {
     setCurrentShape(shape => {
-      if (!shape) return;
+      if (!shape) return shape;
       
       const movedShape = moveX(shape, 1);
       const collision = isCollision(movedShape, occupiedCells);
@@ -226,6 +209,7 @@ export function useGame() {
   return {
     score,
     gameOver,
+    nextShape,
     fieldCells,
     controlsHandlers,
   }

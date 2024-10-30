@@ -1,6 +1,9 @@
-import { generateField } from "./utils";
+import { generateGameField } from "./utils";
 
 export const TICKRATE = 400;
+export const GAME_FIELD_SIZE_X = 10;
+export const GAME_FIELD_SIZE_Y = 20;
+export const PREVIEW_SIZE = 4;
 
 export const FieldIndexMap: Record<number, string> = {
   0: '00',
@@ -81,4 +84,4 @@ export const DefaultPoints = {
   ],
 }
 
-export const DefaultField = generateField();
+export const DefaultField = generateGameField();

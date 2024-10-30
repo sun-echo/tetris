@@ -1,10 +1,10 @@
 import './index.css'
 
-interface IScoreProps {
+interface ScoreProps {
   value: number;
 }
 
-export function Score({value}: IScoreProps) {
+export function Score({value}: ScoreProps) {
   return <div className="score">
     <div className="score__title">
       Score:

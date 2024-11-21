@@ -1,0 +1,29 @@
+.shape-preview {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  width: 200px;
+  height: 250px;
+  top: 450px;
+  right: -250px;
+  background: rgb(35, 8, 155);
+  justify-content: center;
+  align-items: center;
+}
+
+.shape-preview__title {
+  font-size: 30px;
+  color: rgb(23, 238, 34);
+}
+
+.shape-preview__screen {
+  width: 150px;
+  height: 150px;
+  display: grid;
+  position: relative;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  overflow: hidden;
+  background: rgb(35, 8, 155);
+  border: 1px solid rgb(105, 105, 105);
+}

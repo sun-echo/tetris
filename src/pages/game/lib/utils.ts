@@ -99,6 +99,37 @@ function placeShapeOnField(field: Field, shape?: Shape) {
   return _field;
 }
 
+function getPointPreviewIndex(point: Point) {
+  const { x, y } = point;
+  const _x = x < 4 ? `0${x}` : `${x}`;
+  const _y = y < 4 ? `0${y}` : `${y}`;
+  return _x + _y;
+}
+
+
+function placeShapeOnPreview(field: Field, shape?: Shape) {
+  const _shape = normalizeShape(shape);
+
+  if (!_shape) {
+    return field
+  }
+
+  const _field = cloneDeep(field);
+  const { points, color } = _shape;
+
+  for (const point of points) {
+    const { x, y } = point;
+    if (x <= 3 && y <= 3) {
+      const index = getPointPreviewIndex(point)
+      _field[index] = {
+        x, y, color
+      };
+    }
+  }
+
+  return _field;
+}
+
 const isCollision = (shape: Shape, occupiedCells: Point[]) => (
   shape.points.some(
     p => occupiedCells.some(c => c.x === p.x && c.y === p.y)
@@ -390,5 +421,6 @@ export {
   generatePreview,
   generateGameField,
   placeShapeOnField,
+  placeShapeOnPreview,
   getPointFieldIndex,
 }

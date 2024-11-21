@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Cell, Field, Shape } from '../../lib/types';
+import { Field, Shape } from '../../lib/types';
 import {
   generateShape,
   getGameFieldCells,
@@ -10,8 +10,8 @@ import {
   placeShapeOnField,
   rotateAndPlace
 } from '../../lib/utils';
-import {  cloneDeep, isEmpty } from 'lodash';
-import { Color, DefaultField, GAME_FIELD_SIZE_X, GAME_FIELD_SIZE_Y, PREVIEW_SIZE, TICKRATE } from '../../lib/constants';
+import cloneDeep from 'lodash/cloneDeep';
+import { Color, DefaultField, TICKRATE } from '../../lib/constants';
 
 /**
  * TODO:
